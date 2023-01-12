@@ -1,0 +1,164 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Valve.VR;
+
+
+public class Main : MonoBehaviour
+{
+
+    public GameObject Runner;
+    public int nSpeed;
+    public int wallStat;
+
+    float fDeg;
+    // Start is called before the first frame update
+
+    public SteamVR_Input_Sources handType;
+    public SteamVR_Input_Sources handTypeR;
+    public SteamVR_Action_Boolean grabAction;
+    public SteamVR_Action_Boolean grabActionR;
+    public SteamVR_Action_Pose aPose;
+
+
+    private CVRSystem _vrSystem;
+
+    private SteamVR_TrackedCamera.VideoStreamTexture tcam;
+
+    private TrackedDevicePose_t[] _poses;
+    private HmdMatrix34_t _pose;
+
+    float preVal;
+    float nextVal;
+
+   void Awake()
+    {
+        var err = EVRInitError.None;
+        _vrSystem = OpenVR.Init(ref err, EVRApplicationType.VRApplication_Other);
+        if (err != EVRInitError.None)
+        {
+            // handle init error
+        }
+    }
+  
+
+
+
+    void Start()
+    {
+
+        fDeg = 180f;
+        wallStat = 0;
+       
+        _poses = new TrackedDevicePose_t[OpenVR.k_unMaxTrackedDeviceCount];
+        preVal = 0.0f;
+        nextVal = 0.0f;
+
+
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        //GetDeviceToAbsoluteTrackingPose();
+
+        if (CheckGrab())
+        {
+            Debug.Log("GRAB ACTIONL");
+            Runner.transform.Translate(Vector3.forward * Time.deltaTime * nSpeed);
+
+        }
+
+        if(CheckGrabR())
+        {
+            Runner.transform.localRotation = Quaternion.Euler(new Vector3(0f, fDeg++, 0f));
+            Debug.Log("GRAB ACTIONL R");
+
+
+        }
+
+
+        if (wallStat == 0)
+        {
+            if (Input.GetKey(KeyCode.UpArrow))
+            {
+                Runner.transform.Translate(Vector3.forward * Time.deltaTime * nSpeed);
+            }
+
+            //this.gameObject.transform.localRotation = Quaternion.Euler(new Vector3(0f, 180f, 0f));
+
+            if (Input.GetKey(KeyCode.RightArrow))
+            {
+                Runner.transform.localRotation = Quaternion.Euler(new Vector3(0f, fDeg++, 0f));
+            }
+
+            if (Input.GetKey(KeyCode.LeftArrow))
+            {
+                Runner.transform.localRotation = Quaternion.Euler(new Vector3(0f, fDeg--, 0f));
+            }
+
+        }
+
+        if (Input.GetKey(KeyCode.DownArrow))
+        {
+            Runner.transform.Translate(Vector3.back * Time.deltaTime * nSpeed);
+        }
+
+         _vrSystem.GetDeviceToAbsoluteTrackingPose(ETrackingUniverseOrigin.TrackingUniverseStanding, 0.0f, _poses);
+
+        // preVal = _poses[0].mDeviceToAbsoluteTracking.m7;
+
+        /*if (preVal!= _poses[0].mDeviceToAbsoluteTracking.m7)
+        {
+            Runner.transform.Translate(Vector3.forward * Time.deltaTime * nSpeed);
+        }*/
+
+        
+         Debug.Log("m0:"+_poses[0].mDeviceToAbsoluteTracking.m0 + " m1:" + _poses[0].mDeviceToAbsoluteTracking.m1 + " m2:" + _poses[0].mDeviceToAbsoluteTracking.m2);
+
+         Debug.Log("m3:"+_poses[0].mDeviceToAbsoluteTracking.m3 + " m4:" + _poses[0].mDeviceToAbsoluteTracking.m4 + " m5:" + _poses[0].mDeviceToAbsoluteTracking.m5);
+
+
+         Debug.Log("m6:"+_poses[0].mDeviceToAbsoluteTracking.m6 + " m7:" + _poses[0].mDeviceToAbsoluteTracking.m7 + " m8:" + _poses[0].mDeviceToAbsoluteTracking.m8+" m9:" + _poses[0].mDeviceToAbsoluteTracking.m9);
+
+
+
+
+        //Vector3 vv = SteamVR_Utils.GetPosition(_pose);
+        //Debug.Log("m0:" + _pose.m0 + " m1:" + _pose.m1 + " m2:" + _pose.m2);
+        //aPose.localPosition.x
+
+        //Debug.Log("m0:" + aPose.localPosition.x + " m1:" + aPose.localPosition.y + " m2:" + aPose.localPosition.z);
+
+        //_pose = tcam.GetPose();
+
+        //Debug.Log("m0:" + _pose.mDeviceToAbsoluteTracking.m1);
+
+
+
+    }
+
+
+    private bool CheckGrab()
+    {
+        return grabAction.GetState(handType);
+    }
+
+    private bool CheckGrabR()
+    {
+        
+        return grabActionR.GetState(handTypeR);
+    }
+
+
+    // shutdown
+    /*void OnDestroy()
+    {
+        OpenVR.Shutdown();
+    }
+    */
+
+
+
+}

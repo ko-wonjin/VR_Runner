@@ -1,0 +1,16 @@
+{
+  "source": "Unity",
+  "applications": [
+    {
+      "app_key": "application.generated.unity.vrrunner.exe",
+      "launch_type": "url",
+      "url": "steam://launch/",
+      "action_manifest_path": "C:\\Users\\고원진\\Desktop\\휴랩 세미나\\VR개발\\VRRunner\\actions.json",
+      "strings": {
+        "en_us": {
+          "name": "VRRunner [Testing]"
+        }
+      }
+    }
+  ]
+}
